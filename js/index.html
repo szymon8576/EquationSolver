@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Handwritten Equation Solver</title>
+    <link rel="icon" href="./images/favicon.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Jost' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/carousel.css">
+    <link rel="stylesheet" href="./css/faq.css">
+    <link rel="stylesheet" href="./css/explanation.css">
+</head>
+<body>
+
+
+    <div id="topDivWrapper">
+     <div id="topDiv">
+        <div class="topDivElementLeft"><img id="logoImage" src="./images/logo.png" alt="Logo image"></div>
+        <div class="topDivElementRight">
+                   <p>This tool solves single variable equations. Recognized symbols are all digits, subtraction, addition, equality signs and symbol of the variable, <i>x</i>. For more information visit <a href="javascript:go_to_faq_section()">FAQ</a> section.</p>
+            </div>
+        </div> 
+    </div>
+    
+
+    
+    <div id="inputDivWrapper" class="rounded-div animation-ease">
+
+        <div id="topButtonsWrapper" class="centered-div">
+            <button class="left-button button blue pressed" id="canvasButton">Write on board</button>
+            <button class="middle-button button blue" id="imageButton">Upload image</button>
+            <button class="right-button button blue" id="examplesButton">See examples</button>
+        </div>
+
+        <div id="canvasDiv" class="inputDiv active">
+            <h2>Draw an equation below:</p>
+            <canvas id="canvas" width="800" height="300"></canvas>
+            <br>
+        </div>
+        
+        <div id="imageDiv" class="inputDiv ">
+            <div id="dropZone">
+                <p>Drag and drop a PNG image here, or click to select one.</p>
+            </div>
+            <input id="fileInput" type="file" style="display: none;" accept="image/*;capture=camera" onchange="loadLocalImage(event)">
+            <img  id="imagePlaceholder" src="">
+        </div>
+
+        <div id="examplesDiv" class="inputDiv centered-div carousel-container">
+            <div id="carouselWrapper">
+                <div class="carousel"></div>    
+                <!--  -->
+                <!-- <button class="carousel-button next-button">&#9654;</button> -->
+            </div>
+            
+        </div>
+
+        <div id="clearSolveButtonsDiv" class="centered-div">
+            <button class="button green prev-button">&#9664;</button>
+            <button id="clearButton" class="button whole-button red">Clear</button>
+            <button class="button whole-button green" id="solveButton">Solve</button>
+            <button class="button green next-button">&#9654;</button>
+        </div>
+
+    </div>
+
+    <div id="solutionLoader" class="loader"></div>
+
+    <div id="solutionDiv" class="centered-div solutionDiv">
+        <div id="errorDiv" class="centered-div rounded-div equalWidthDiv errorDivClass">
+            <div><h3 id="errorDivText"></h3></div>
+            <div><p id="errorDivSubText"></p></div>
+        </div>
+        <div id="solutionSimple" class="rounded-div equalWidthDiv">
+            <h2>Result:</h2>
+            <div id="solutionImageDiv"><img  id="solutionImagePlaceholder" src=""></div>
+            <h4 id="numOfSolutions"></h4>
+        </div>
+        <div id="solutionSteps" class="rounded-div equalWidthDiv">
+            <h2>Step-by-step solution:</h2>
+            <div id="imageContainer"></div>
+        </div>
+    </div>
+
+    
+
+
+    <div id="faqContainer" class="faq-container rounded-div equalWidthDiv">
+        <div class="faq-item">
+            <div class="question"><i class="fas fa-question-circle fa-lg"></i> How does this app work?</div>
+            <div class="answer">
+                <p>The central component of this tool is the AI model described in this Colab Notebook. It is a convolutional neural network used for recognizing mathematical symbols present in an image. However, image recognition is just one step in the entire algorithm; before recognition, the input image must undergo preprocessing. Additionally, the output obtained from the neural network model must be parsed. The entire procedure can be summarized in six steps: </p>
+                <div id="explanationContainer">
+                    <div class="explanationStep">
+                        <div class="explanationStepNumber"><div class="circle">1</div></div>
+                        <div class="explanationStepText">
+                            <h3>Image Preprocessing</h3>
+                            <p>The input image is converted to grayscale to simplify further processing, reducing it to a single channel representing pixel intensity</p>
+                        </div>
+                        <div class="explanationStepImageDiv"><img src="./images/pre-contours.png" class="explanationStepImage"></div>
+                    </div>
+                    <div class="separator"></div> 
+                    <div class="explanationStep">
+                        <div class="explanationStepNumber"><div class="circle">2</div></div>
+                        <div class="explanationStepText">
+                            <h3>Contour Detection</h3>
+                            <p>The Canny edge detection filter is applied to the grayscale image to highlight edges and create a binary image with edges represented as white lines on a black background.
+                                Morphological operations may be applied to further process the binary image, such as closing gaps in contours.</p>
+                        </div>
+                        <div class="explanationStepImageDiv"><img src="./images/contour-outliers.png" class="explanationStepImage"></div>
+                    </div>
+                    <div class="separator"></div> 
+                    <div class="explanationStep">
+                        <div class="explanationStepNumber"><div class="circle">3</div></div>
+                        <div class="explanationStepText">
+                            <h3>Outliers Detection and Elimination</h3>
+                            <p>Outliers among detected contours are identified and filtered out based on two criteria:
+                                <ul>
+                                    <li>By calculating the distance of each contour's centroid to the median Y value of all centroids. Contours with centroids significantly far from the median are considered outliers and are removed.</li>
+                                    <li>By measuring the distance to the nearest object. Contours with distances above a certain threshold are considered outliers and are removed.</li>
+                                </ul>
+                                
+                                </p>
+                        </div>
+                        <div class="explanationStepImageDiv"><img src="./images/contour-without-outliers.png" class="explanationStepImage"></div>
+                    </div>
+            
+                    <div class="separator"></div> 
+                    <div class="explanationStep">
+                        <div class="explanationStepNumber"><div class="circle">4</div></div>
+                        <div class="explanationStepText">
+                            <h3>Bounding Boxes</h3>
+                            <p>Bounding boxes are drawn around the remaining contours. These boxes encapsulate the regions of interest (ROI) within the image.</p>
+                        </div>
+                        <div class="explanationStepImageDiv"><img src="./images/bounding-boxes.png" class="explanationStepImage"></div>
+                    </div>
+            
+                    <div class="separator"></div> 
+                    <div class="explanationStep">
+                        <div class="explanationStepNumber"><div class="circle">5</div></div>
+                        <div class="explanationStepText">
+                            <h3>Prediction</h3>
+                            <p>
+                                <ul>
+                                    <li>Each bounding box's content is processed and prepared for recognition.</li>
+                                    <li>A Convolutional Neural Network (CNN) model is utilized to predict the label for each bounding box's content. The model uses the prepared content as input and provides a label as output.</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <div class="explanationStepImageDiv"><img src="./images/predictions.png" class="explanationStepImage"></div>
+                    </div>
+            
+                    <div class="separator"></div> 
+                    <div class="explanationStep">
+                        <div class="explanationStepNumber"><div class="circle">6</div></div>
+                        <div class="explanationStepText">
+                            <h3>Result Parsing</h3>
+                            <p>
+                                The predicted labels from the CNN model are concatenated together to form the recognized equation.
+                                The recognized equation is returned as the final result, representing the symbolic expression extracted from the input image.
+                            </p>
+                        </div>
+                        <div class="explanationStepImageDiv"><img src="./images/parsed-result.png" class="explanationStepImage"></div>
+                    </div>
+                    
+                    
+                </div>
+            
+            </div>
+        </div>
+        <div class="faq-item ">
+            <div class="question"><i class="fas fa-question-circle fa-lg"></i> What type of input is recognized?</div>
+            <div class="answer">
+                <p>This application recognizes and solves one-line equations with one variable. Recognized symbols are:</p>
+                <ul>
+                    <li>digits of 0 to 9,</li>
+                    <li>three mathematical operators: equality (<b>=</b>), addition (➕) and subtraction (➖)</li>
+                    <li>the sign of the variable <i>x</i>.</li>
+                </ul>
+            </p>
+            <p>Please note that fractions, brackets, multiplication or division symbols are not supported (yet 😉). If you want to see examples showing abilities of this tool, see <a href="javascript:go_to_examples_section()">examples</a> section.</p> </div>
+            
+        </div>
+        <div class="faq-item">
+            <div class="question"><i class="fas fa-question-circle fa-lg"></i> My input has not been recognized. What can I do?</div>
+            <div class="answer">
+                <ul>
+                    <li> Make sure that your equation does not contain unsupported symbols. Recognized symbols are all digits, -, +, = and symbol of the variable, x. </a>
+                    <li> If you uploaded a photo, make sure that the background is plain.</li>
+                    <li> Try adding some space between symbols; if they are too close, algorithm may have a problem with proper object separation.</li>
+                    <li> <a href="javascript:go_to_examples_section()">See examples</a> to get to know more about valid requests.</li>
+                    <li> If the problem still exists, please contact the author. Your feedback is appreciated!</li>
+                </ul>
+                </div>
+        </div>
+        <div class="faq-item">
+            <div class="question"><i class="fas fa-question-circle fa-lg"></i> Where can I found more of your projects?</div>
+            <div class="answer">
+                <p>You can find more projects on <a href="https://github.com/szymon8576">github.com/szymon8576</a> </p>
+            </div>
+        </div>
+        
+    </div>
+
+
+    <div id="spacer">
+
+    </div>
+
+    
+    <script src="./js/toggleInput.js"></script>
+    <script src="./js/requestsHandling.js"></script>
+    <script src="./js/canvas.js"></script>
+    <script src="./js/dragAndDrop.js"></script>
+    <script src="./js/carousel.js"></script>
+    <script src="./js/faq.js"></script>
+    
+    
+    
+
+    
+
+</body>
+</html>

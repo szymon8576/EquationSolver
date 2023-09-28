@@ -1,0 +1,345 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Jost';
+    font-size: 18px;
+    line-height: 1.5;
+
+    background-color: rgb(52, 70, 93);
+} 
+
+
+#canvas {
+    border: 1px solid black;
+}
+
+.centered-div{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    
+}
+
+.middle-button{
+    width: 33.3333%;
+}
+
+#logoImage{
+    border-radius: 20px;
+}
+
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    color: black; 
+    font-size: 24px; 
+    text-align: center; 
+    margin: 20px 0; 
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
+}
+
+#spacer{
+   padding: 1px;
+}
+
+.button {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s ease;
+    text-transform: uppercase;
+    font-family: inherit;
+}
+
+/* Left Button */
+.left-button {
+    width: 33.3333%;
+    border-top-left-radius: 20px;
+    border-right: 1px solid black;
+}
+
+/* Right Button */
+.right-button {
+    width: 33.3333%;
+    border-top-right-radius: 20px;
+    /* border-bottom-right-radius: 20px; */
+    border-left: 1px solid black; 
+}
+
+.blue {
+    /* background: linear-gradient(to bottom, #004fb0, #5E35B1); */
+    background-color: #3353ac;
+}
+
+.green {
+    /* background: linear-gradient(to bottom, #2fa937, #005b0c); */
+    background-color: #1b7500;
+}
+
+.gray {
+    /* background: linear-gradient(to bottom, #aaaaaa, #dcdcdc); */
+    background-color: #c4c4c4;
+}
+
+.gray.button:hover {
+    transform: scale(1);
+}
+
+.pressed {
+    /* background: linear-gradient(to bottom, #002c66, #001023); */
+    background-color: #001369;
+}
+
+.red {
+    /* background: linear-gradient(to bottom, #a00000, #580000); */
+    background-color: #ac0000;
+}
+
+.whole-button{
+    border-radius: 20px;
+    padding: 10px 40px;
+}
+
+.button:hover {
+    transform: scale(1.02);
+}
+
+
+.whole-button{
+    margin: 5px;
+}
+
+
+#topButtonsWrapper{
+    width: 100%;
+}
+
+#topDivWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+#topDiv{
+    display: flex;
+    align-content: center;
+    height: 110px;
+    width: 80%
+}
+
+
+.topDivElementLeft{
+    display: inline-flex;
+    justify-content: center;
+    flex: 1;
+    margin-top: 15px;
+    margin-right: 5px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.topDivElementRight{
+    display: inline-flex;
+    justify-content: left;
+    flex: 2;
+    margin-top: 15px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    margin-left: 5px;
+    font-size: 16px;
+    padding: 5px 25px 5px 25px;
+    text-align: justify;
+    overflow: hidden;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    
+    
+}
+
+#clearSolveButtonsDiv{
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+.solveButtonInExamples{
+    width: 110px;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(to bottom, #003e89, #5E35B1);
+    padding: 10px 0;
+    z-index: 100;
+    height: 30px;
+}
+
+.sticky-header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: right;
+    background: transparent; 
+}
+
+.sticky-header nav ul li {
+    margin: 0 20px;
+}
+
+.sticky-header nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    transition: color 0.3s; 
+}
+
+.sticky-header nav ul li a:hover {
+    color: #ff6600; 
+}
+
+
+.rounded-div {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2); 
+    margin: 20px auto; 
+    width: auto;
+
+}
+
+.hidden{
+    display: none;
+}
+
+.animation-ease{
+    animation: fade-in 0.5s ease;
+}
+
+
+.inputDiv {
+
+    opacity: 0;
+    height: 0;
+    display:none;
+    overflow: hidden;
+    width:auto;
+
+    justify-content: center; 
+    align-items: center; 
+}
+
+#inputDivWrapper {
+    width: 80%;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top:0;
+    border-top-right-radius: 50px;
+    border-top-left-radius: 50px;
+
+
+}
+
+#examplesDiv{
+  display: none;
+  justify-content: center; 
+  align-items: center; 
+  width: 500px;
+  padding-top: 40px;
+}
+
+.solutionDiv{
+    transition: height 0.5s ease-out;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+
+   display:flex;
+   flex-direction: column;
+
+
+}
+
+
+.equalWidthDiv{
+    width: 80%;
+}
+
+
+
+#canvasDiv.active {
+    opacity: 1;
+    height: auto;
+    display: flex;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#imagesDiv.active {
+    opacity: 1;
+    height: auto;
+    display: flex;
+}
+
+#examplesDiv.active {
+    opacity: 1;
+    height: auto;
+    display: flex;
+}
+
+.active {
+    opacity: 1;
+    height: auto;
+    display: flex;
+}
+
+.loader.active {
+    opacity: 1;
+    height: auto;
+}
+
+#dropZone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    width: 70%;
+}
+
+#imageDiv{
+    padding-top: 40px;
+    padding-bottom: 30px;
+
+}
+
+.errorDivClass{
+    display: none;
+    
+}
+
+.errorDivClass.active{
+    display: flex;
+    flex-direction: column;
+}
+
+#canvasDiv h2{
+    padding-top: 5px;
+}
+
+hr{
+    width: 80%;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

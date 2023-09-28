@@ -1,0 +1,13 @@
+Flask
+Gunicorn
+flask_cors
+imageio
+joblib
+matplotlib
+numpy
+opencv_python_headless
+scipy
+sympy
+tensorflow-cpu
+scikit-learn
+requests
