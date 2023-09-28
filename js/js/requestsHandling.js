@@ -69,7 +69,7 @@ function clear_result(){
  async function send_image(imageData){
     try {
 
-        const response = await fetch("https://equation-solver-flask.onrender.com/solve", {
+        const response = await fetch("https://eq-solver-flask.onrender.com/solve", {
             method: "POST",
             mode: "cors",
             headers: {

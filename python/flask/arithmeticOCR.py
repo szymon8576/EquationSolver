@@ -33,7 +33,7 @@ def predict_label(image, label_decoder):
 
     # prediction = model(np.array([image])) # model.predict(np.array([image]), verbose=0)
     # Specify the URL of your TensorFlow Serving server
-    tf_serving_url = 'https://tensorflow-serving-equation-solver.onrender.com/v1/models/arithmeticOCR_model:predict'
+    tf_serving_url = 'https://eq-solver-tf-serving.onrender.com/v1/models/arithmeticOCR_model:predict'
     # Replace with the actual URL for your TensorFlow Serving API
 
     try:
