@@ -69,7 +69,7 @@ function clear_result(){
  async function send_image(imageData){
     try {
 
-        const response = await fetch("https://eq-solver-flask.onrender.com/solve", {
+        const response = await fetch("http://localhost:5000/solve", {
             method: "POST",
             mode: "cors",
             headers: {
@@ -138,7 +138,7 @@ function clear_result(){
         solutionSteps.classList.add("hidden");
         solutionSimple.classList.add("hidden");
         
-        errorDivText.textContent = `Could't connect to the server.`;
+        errorDivText.textContent = `Couldn't connect to the server.`;
         errorDiv.classList.add("active");
 
         errorSubDivText.innerText = `${error.message} - that's all we know.`
@@ -188,7 +188,9 @@ async function solveEquation() {
         send_image(imageData);
     }
     else if (visibleDiv === "image" && dropZone.style.display === "none"){  //TODO
-        send_image(imageElement.src);
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedDataURL = croppedCanvas.toDataURL("image/png");
+        send_image(croppedDataURL);
 
     }
     else if (visibleDiv == "examples"){

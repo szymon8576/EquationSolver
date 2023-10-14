@@ -54,6 +54,8 @@ function resizeImage(img, fileType, maxWidth = 500){
     return resizing_canvas.toDataURL(fileType);
 }
 
+let cropper;
+
 function readAndResizeFile(file) {
     if (file && file.type.startsWith("image/")) {
         const reader = new FileReader();
@@ -68,6 +70,14 @@ function readAndResizeFile(file) {
 
                 imageElement.src = resizedDataURL;
                 imageElement.style.display = "block";
+
+                cropper = new Cropper(imageElement, {
+                    background: false,
+                    viewMode:0,
+                    data:{
+                        width: 500
+                    },
+                });
             };
         };
 
@@ -80,4 +90,5 @@ function readAndResizeFile(file) {
 function resetDropZone() {
     imageElement.src = "";
     dropZone.style.display = "block";
+    cropper.destroy();
 }
