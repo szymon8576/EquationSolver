@@ -73,9 +73,8 @@ function readAndResizeFile(file) {
 
                 cropper = new Cropper(imageElement, {
                     background: false,
-                    viewMode:0,
                     data:{
-                        width: 500
+                        width: 450
                     },
                 });
             };

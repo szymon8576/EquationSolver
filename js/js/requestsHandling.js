@@ -187,15 +187,19 @@ async function solveEquation() {
         const imageData = canvas.toDataURL("image/png");
         send_image(imageData);
     }
-    else if (visibleDiv === "image" && dropZone.style.display === "none"){  //TODO
+    else if (visibleDiv === "image" && cropper){  
         const croppedCanvas = cropper.getCroppedCanvas();
-        const croppedDataURL = croppedCanvas.toDataURL("image/png");
-        send_image(croppedDataURL);
+        
+        if (croppedCanvas){
+            const croppedDataURL = croppedCanvas.toDataURL("image/png");
+            send_image(croppedDataURL);
+        }
 
     }
     else if (visibleDiv == "examples"){
 
-        let base64 = getBase64Image(document.getElementById(`carouselImg${currentSlide}`));
+        let currSlideImg = document.getElementsByClassName("slide")[currentSlide].querySelector("img");
+        let base64 = getBase64Image(currSlideImg);
 
         send_image(base64);
     }

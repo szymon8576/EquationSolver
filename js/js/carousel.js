@@ -37,7 +37,6 @@ images.forEach((imageUrl, index) => {
 updateCarousel();
 
 function updateCarousel() {
-    console.log(currentSlide);
     carousel.style.transform = `translateX(${(images.length - currentSlide-2) * (500)}px)`;
 
     if (currentSlide === 0) {

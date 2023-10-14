@@ -29,7 +29,7 @@ def str_to_sympy(eq):
         return False, str(e)
 
 
-def predict_label(image, label_decoder):
+def predict_labels(images, label_decoder):
 
     # prediction = model(np.array([image])) # model.predict(np.array([image]), verbose=0)
     # Specify the URL of your TensorFlow Serving server
@@ -38,18 +38,17 @@ def predict_label(image, label_decoder):
 
     try:
         # Send a POST request to TensorFlow Serving
-        response = requests.post(tf_serving_url, json={"instances": np.array([np.expand_dims(image, 2)]).tolist()  })
+        instances = [np.array(np.expand_dims(image, 2)).tolist() for image in images]
+        response = requests.post(tf_serving_url, json={"instances": instances})
 
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
-            # Parse the response JSON
-            prediction = response.json()["predictions"][0]
-            # print(prediction)
-            predicted_label = np.argmax(prediction)
-            # print(predicted_label)
-            encoded_label = label_decoder[predicted_label]
-            # print(encoded_label)
-            return encoded_label
+
+            predictions = response.json()["predictions"]
+            predicted_labels = [np.argmax(prediction) for prediction in predictions]
+            encoded_labels = [label_decoder[predicted_label] for predicted_label in predicted_labels]
+
+            return encoded_labels
 
             # Return the prediction as a JSON response
         else:
@@ -174,7 +173,7 @@ def find_contours(image, canny_lower_threshold):
 
 
 def find_bounding_boxes(contours):
-    return [cv2.boundingRect(contour) for contour in contours if cv2.contourArea(contour) > 50]
+    return [cv2.boundingRect(contour) for contour in contours if cv2.contourArea(contour) > 40]
 
 
 def resize_to_desired_width(image, desired_width=500):
@@ -184,15 +183,16 @@ def resize_to_desired_width(image, desired_width=500):
 
 
 def identify_objects(bounding_boxes, image, label_decoder):
-    identified_objects = []
-    for x, y, width, height in bounding_boxes:
-        centered = center_and_make_square(image[y:y + height, x:x + width])
 
-        label = predict_label(centered, label_decoder=label_decoder)
+    images = [center_and_make_square(image[y:y + height, x:x + width]) for x, y, width, height in bounding_boxes]
+    labels = predict_labels(images, label_decoder=label_decoder)
+
+    identified_objects = []
+    for idx, (x, y, width, height) in enumerate(bounding_boxes):
         identified_objects.append(
             {"y": y + height // 2,
              "x": x + width // 2,
-             "label": label}
+             "label": labels[idx]}
         )
 
     return sorted(identified_objects, key=lambda elem: elem["x"])
@@ -203,6 +203,10 @@ def identify_objects_in_image(image, label_decoder, canny_lower_threshold):
     image_resized = resize_to_desired_width(image)
     contours = find_contours(image_resized, canny_lower_threshold)
     bounding_boxes = find_bounding_boxes(contours)
+
+    if len(bounding_boxes) == 0:
+        return []
+
     identified_objects = identify_objects(bounding_boxes, image_resized, label_decoder)
     return identified_objects
 
@@ -213,7 +217,7 @@ def convert_image_to_equation(image, label_decoder):
 
         identified_objects = identify_objects_in_image(image, label_decoder, canny_lt)
         equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")
-        # print(equation)
+
         parsing_status, parsing_result = str_to_sympy(equation)
 
         if parsing_status is True:
