@@ -7,6 +7,8 @@ from sympy import degree, symbols
 import requests
 import json
 import re
+from flask import current_app
+
 
 transformations = (standard_transformations + (implicit_multiplication_application,))
 def str_to_sympy(eq):
@@ -38,22 +40,6 @@ def str_to_sympy(eq):
 
     except Exception as e:
         return False, str(e)
-
-
-def fetch_tfserving(images, label_decoder):
-
-    try:
-        tf_serving_url = app.config['TFSERVING_URL'] + '/v1/models/ArithmeticOCR:predict'
-        instances = [np.array(np.expand_dims(image, 2)).tolist() for image in images]
-        response = requests.post(tf_serving_url, json={"instances": instances})
-
-        if response.status_code == 200:
-            return response.json()["predictions"]
-        else:
-            print('Failed to get a valid response from TensorFlow Serving')
-
-    except Exception as e:
-        print(str(e))
 
 
 def prepare_image_for_recognition(image, bin_lt=130):
@@ -159,6 +145,22 @@ def resize_to_desired_width(image, desired_width=500):
     return cv2.resize(image, (desired_width, height))
 
 
+def fetch_tfserving(data):
+
+    try:
+        tf_serving_url = current_app.config['TFSERVING_URL'] + '/v1/models/ArithmeticOCR:predict'
+        instances = [np.array(np.expand_dims(image, 2)).tolist() for image in data]
+        response = requests.post(tf_serving_url, json={"instances": instances})
+
+        if response.status_code == 200:
+            return response.json()["predictions"]
+        else:
+            print('Failed to get a valid response from TensorFlow Serving')
+
+    except Exception as e:
+        print(str(e))
+        
+        
 def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt):
 
     image_ = resize_to_desired_width(image)
@@ -173,7 +175,7 @@ def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt):
         for x, y, width, height in bounding_boxes
     ]
 
-    predictions = fetch_tfserving(preprocessed_images, label_decoder=label_decoder)
+    predictions = fetch_tfserving(preprocessed_images)
     predicted_labels = [np.argmax(p) for p in predictions]
     labels = [label_decoder[predicted_label] for predicted_label in predicted_labels]
 

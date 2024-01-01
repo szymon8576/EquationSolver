@@ -46,8 +46,8 @@ def solve():
         return {"processing_status": "FINALIZED",
                 "equation": parsing_result["str_eq"], "instructions": instructions,
                 "equation_status": status, "solution": solution}
-
-
+        
+        
 @app.route('/health-check', methods=["GET"])
 def health_check():
     return "OK", 200
