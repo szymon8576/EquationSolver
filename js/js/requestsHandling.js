@@ -66,10 +66,26 @@ function clear_result(){
 
 }
 
+
+let backendURL
+async function loadConfig() {
+    try {
+      const response = await fetch('config.json');
+      const config = await response.json();
+      backendURL = config.backendURL;
+      backendSpinUp(backendURL);
+    } catch (error) {
+      console.error('Error loading configuration:', error);
+    }
+  }
+
+loadConfig();
+
+
  async function send_image(imageData){
     try {
 
-        const response = await fetch("http://localhost:5000/solve", {
+        const response = await fetch(`${backendURL}/solve`, {
             method: "POST",
             mode: "cors",
             headers: {
