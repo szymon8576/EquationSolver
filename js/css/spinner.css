@@ -90,8 +90,8 @@
 .countdown {
     position: absolute;
     right: 26px;
-    bottom: 22px;
-    font-size: 10px;
+    bottom: 23px;
+    font-size: 9px;
     font-style: italic;
     color: #001369b7;
   }
