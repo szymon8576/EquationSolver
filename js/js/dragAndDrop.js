@@ -23,6 +23,9 @@ dropZone.addEventListener("drop", (e) => {
         dropZone.style.border = "2px dashed #ccc";
         readAndResizeFile(e.dataTransfer.files[0]);
     }
+    else{
+        document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
+    }
 });
 
 
@@ -34,6 +37,9 @@ fileInput.addEventListener("change", () => {
     if(fileInput.files.length > 0 && fileInput.files[0].type == "image/png") 
     {
         readAndResizeFile(fileInput.files[0]);
+    }
+    else{
+        document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
     }
 });
 
@@ -90,5 +96,6 @@ function readAndResizeFile(file) {
 function resetDropZone() {
     imageElement.src = "";
     dropZone.style.display = "block";
+    document.getElementById("dragAndDropZoneText").innerText="Drag and drop a PNG image here, or click to select one 📸"
     if(cropper) cropper.destroy();
 }
