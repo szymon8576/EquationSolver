@@ -8,6 +8,5 @@ numpy
 opencv_python_headless
 scipy
 sympy
-tensorflow-cpu
 scikit-learn
 requests
