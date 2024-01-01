@@ -17,10 +17,12 @@ dropZone.addEventListener("dragleave", () => {
 
 dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
-    dropZone.style.border = "2px dashed #ccc";
 
-    const droppedFile = e.dataTransfer.files[0];
-    readAndResizeFile(droppedFile);
+    if(fileInput.files.length == 1 && fileInput.files[0].type == "image/png")
+    {
+        dropZone.style.border = "2px dashed #ccc";
+        readAndResizeFile(e.dataTransfer.files[0]);
+    }
 });
 
 
@@ -29,8 +31,10 @@ dropZone.addEventListener("click", () => {
 });
 
 fileInput.addEventListener("change", () => {
-    const selectedFile = fileInput.files[0];
-    readAndResizeFile(selectedFile);
+    if(fileInput.files.length == 1 && fileInput.files[0].type == "image/png") 
+    {
+        readAndResizeFile(fileInput.files[0]);
+    }
 });
 
 
@@ -57,7 +61,6 @@ function resizeImage(img, fileType, maxWidth = 500){
 let cropper;
 
 function readAndResizeFile(file) {
-    if (file && file.type.startsWith("image/")) {
         const reader = new FileReader();
 
         reader.onload = function () {
@@ -72,7 +75,6 @@ function readAndResizeFile(file) {
                 imageElement.style.display = "block";
 
                 cropper = new Cropper(imageElement, {
-                    //TODO remove transparent background
                     data:{
                         width: 450
                     },
@@ -83,7 +85,6 @@ function readAndResizeFile(file) {
         reader.readAsDataURL(file);
 
         dropZone.style.display = "none";
-    }
 }
 
 function resetDropZone() {

@@ -24,23 +24,6 @@ function show_instructions(instructionsData){
 }
 
 
-
-function loadLocalImage(event) {
-    const imageElement = document.getElementById("imagePlaceholder");
-    const fileInput = event.target;
-
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-
-            imageElement.src = e.target.result;
-        };
-
-        reader.readAsDataURL(fileInput.files[0]);
-    }
-}
-
 let numOfSolutions = document.getElementById('numOfSolutions')
 let solutionSteps = document.getElementById('solutionSteps')
 let solutionSimple = document.getElementById('solutionSimple')
