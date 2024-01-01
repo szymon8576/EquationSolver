@@ -14,7 +14,7 @@ from solver import solve_eq
 app = Flask(__name__)
 CORS(app)
 
-label_encoder = load('label_encoder.pkl')
+label_encoder = load('label_encoder.pkl') # TODO
 label_decoder = {i: label for i, label in enumerate(label_encoder.classes_)}
 
 # conn = psycopg2.connect(
