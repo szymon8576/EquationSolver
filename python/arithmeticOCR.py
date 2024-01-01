@@ -7,50 +7,49 @@ from sympy.parsing.sympy_parser import parse_expr, standard_transformations, imp
 from sympy import degree, symbols
 import requests
 import json
+import re
 
 transformations = (standard_transformations + (implicit_multiplication_application,))
-
-
 def str_to_sympy(eq):
+    """
+    Converts an equation stored in a string to a Sympy Equation.
+
+    :param eq: Equation in string format, e.g., "2x+3=10".
+    :return: A tuple containing parsing status (True - success, False - failed) and parsed Sympy Equation.
+    """
 
     try:
-        parsed = parse_expr("Eq(" + eq.replace("=", ",") + ")",
-                            evaluate=False,
-                            transformations=transformations)
+        parsed = parse_expr("Eq(" + eq.replace("=", ",") + ")", evaluate=False, transformations=transformations)
 
         if isinstance(parsed, BooleanTrue) or isinstance(parsed, BooleanFalse):
+            # if equation has zero or infinitely many solutions
             return True, parsed
+
         elif degree(parsed.lhs, symbols("x")) >= 2 or degree(parsed.rhs, symbols("x")) >= 2:
+            # if a polynomial of degree >=2 was encountered
             return False, "degree >= 2 is not allowed"
+
+        elif bool(re.search(r'x\d', eq)):
+            # if in equation x is followed by digit (for example "20 + x5 = 4" - it indicates wrong recognition)
+            return False, "encountered x-symbol followed by digit"
+
         else:
+            # if equation has exactly one solution
             return True, parsed
 
     except Exception as e:
         return False, str(e)
 
 
-def predict_labels(images, label_decoder):
+def fetch_tfserving(images, label_decoder):
 
-    # prediction = model(np.array([image])) # model.predict(np.array([image]), verbose=0)
-    # Specify the URL of your TensorFlow Serving server
-    tf_serving_url = 'http://localhost:8501/v1/models/ArithmeticOCR:predict'  # 'https://eq-solver-tf-serving.onrender.com/v1/models/arithmeticOCR_model:predict'
-    # Replace with the actual URL for your TensorFlow Serving API
-
+    tf_serving_url = 'http://localhost:8501/v1/models/ArithmeticOCR:predict'
     try:
-        # Send a POST request to TensorFlow Serving
         instances = [np.array(np.expand_dims(image, 2)).tolist() for image in images]
         response = requests.post(tf_serving_url, json={"instances": instances})
 
-        # Check if the request was successful (status code 200)
         if response.status_code == 200:
-
-            predictions = response.json()["predictions"]
-            predicted_labels = [np.argmax(prediction) for prediction in predictions]
-            encoded_labels = [label_decoder[predicted_label] for predicted_label in predicted_labels]
-
-            return encoded_labels
-
-            # Return the prediction as a JSON response
+            return response.json()["predictions"]
         else:
             print('Failed to get a valid response from TensorFlow Serving')
 
@@ -58,26 +57,22 @@ def predict_labels(images, label_decoder):
         print(str(e))
 
 
-
-
-
-def center_and_make_square(image):
+def prepare_image_for_recognition(image, bin_lt=130):
     # convert to grayscale and perform thresholding
     img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, img = cv2.threshold(img, 130, 255, cv2.THRESH_BINARY)
+    _, img = cv2.threshold(img, bin_lt, 255, cv2.THRESH_BINARY)
 
-    # convert image to integer format and invert values
+    # convert image to an integer format and invert values
     img = (img / 255).astype(np.uint8)
     img = 1 - img
 
-    height, width = img.shape[0], img.shape[1]
-
     # pad image to obtain ~ 1:1 ratio
+    height, width = img.shape[0], img.shape[1]
     desired_size = max(height, width) * 1.1
     delta_y, delta_x = int((desired_size - height) // 2), int((desired_size - width) // 2)
-    img = cv2.copyMakeBorder(img, delta_y, delta_y, delta_x, delta_x, cv2.BORDER_CONSTANT, value=(0))
+    img = cv2.copyMakeBorder(img, delta_y, delta_y, delta_x, delta_x, cv2.BORDER_CONSTANT, value=0)
 
-    # perform dilation before passing img to AI model
+    # perform dilation
     img = cv2.resize(img, (92, 92))
     img = cv2.dilate(img, np.ones((3, 3), np.uint8), iterations=1)
     img = cv2.resize(img, (45, 45))
@@ -85,143 +80,122 @@ def center_and_make_square(image):
     return img
 
 
-def group_contours(li, groupping_condition):
+def eliminate_outlier_contours(contours_coords):
+
+    if len(contours_coords) <= 4:
+        return contours_coords
+
+    contours = [{"coords": c, "x": np.median(c[:, 0, 0]), "y": np.median(c[:, 0, 1])} for i, c in enumerate(contours_coords)]
+
+    # filter contours by number of points in contour
+    contours = [c for c in contours if len(c["coords"]) > 20]
+
+    # by distance to nearest object
+    central_points = np.array([[contour["x"], contour["y"]] for contour in contours])
+    distances = np.linalg.norm(central_points[:, np.newaxis, :] - central_points, axis=2)
+    np.fill_diagonal(distances, np.inf)
+    min_distances = np.min(distances, axis=1)
+    z_scores = stats.zscore(min_distances)
+    contours = [contour for i, contour in enumerate(contours) if abs(z_scores[i]) < 3]
+
+    # by median-y value
+    z_scores = stats.zscore([contour["y"] for contour in contours])
+    contours = [contour for i, contour in enumerate(contours) if abs(z_scores[i]) < 3]
+
+    # print("Eliminated outliers=", len(contours_coords) - len(contours))
+    return [contour["coords"] for contour in contours]
+
+
+def group_elements(li, grouping_condition):
+    """
+    Iterates over consecutive elements in the list and puts them in one group as long as the grouping_condition is met.
+    """
     out = []
     last = li[0]
     for x in li:
-        if groupping_condition(x, last):
+        if grouping_condition(x, last):
             yield out
             out = []
         out.append(x)
         last = x
     yield out
-
-
-def eliminate_outlier_contours(contours):
-    if len(contours) <= 4:
+    
+    
+def stack_contours_vertically(contours, threshold=20):
+    """
+    Stacks contours vertically if distance between their median x-values does not exceed threshold value.
+    """
+    
+    if len(contours) == 0: 
         return contours
 
-    contours_ = [{
-        "coords": c, "x": np.median(c[:, 0, 0]), "y": np.median(c[:, 0, 1])
-    } for i, c in enumerate(contours)]
+    contours_ = [{"coords": c, "x": np.median(c[:, 0, 0]), "y": np.median(c[:, 0, 1])} for i, c in enumerate(contours)]
 
-    # print([len(c["coords"]) for c in contours_])
-    # print([cv2.contourArea(c["coords"]) for c in contours_])
-
-    # by number of points in contour
-    contours_ = [c for c in contours_ if len(c["coords"]) > 20]
-
-
-    # by distance to nearest object
-    points = np.array([[contour["x"], contour["y"]] for contour in contours_])
-    distances = np.linalg.norm(points[:, np.newaxis, :] - points, axis=2)
-    np.fill_diagonal(distances, np.inf)
-    min_distances = np.min(distances, axis=1)
-    z_scores = stats.zscore(min_distances)
-    # print([round(z,2) for z, x in zip(z_scores, [contour["x"] for contour in contours_])])
-    contours_ = [contour for i, contour in enumerate(contours_) if abs(z_scores[i]) < 2]
-
-    z_scores = stats.zscore([contour["y"] for contour in contours_])
-    # print([round(z,2) for z, x in zip(z_scores, [contour["y"] for contour in contours_])])
-    contours_ = [contour for i, contour in enumerate(contours_) if abs(z_scores[i]) < 2.2]  # dists_from_median[i] < 2.2 * median_y]
-
-    # print("Eliminated outliers=", len(contours) - len(contours_))
-    return [contour["coords"] for contour in contours_]
-
-
-def stack_contours_vertically(contours):
-    if len(contours) == 0:
-        return contours
-
-    contours_ = [{
-        "coords": c, "x": np.median(c[:, 0, 0]), "y": np.median(c[:, 0, 1])
-    } for i, c in enumerate(contours)]
-
-    # sort contours by mean x-value and group them
+    # sort contours by median x-value and group them
     contours_ = sorted(contours_, key=lambda c: c["x"])
-
-    # print("contours distances:")
-    # print([c["x"] for c in contours_])
-    # print([c["y"] for c in contours_])
-
-    groupping_condition = lambda a, b:  False if (a["x"] - b["x"] < 20) else True
-    groupped_contours = list(group_contours(contours_, groupping_condition))
+    grouping_condition = lambda a, b:  False if (a["x"] - b["x"] < threshold) else True
+    grouped_contours = list(group_elements(contours_, grouping_condition))
 
     # stack grouped contours
-    return [np.vstack([contour["coords"] for contour in group]) for group in groupped_contours]
+    return [np.vstack([contour["coords"] for contour in group]) for group in grouped_contours]
 
 
-def find_contours(image, canny_lower_threshold):
+def detect_contours_in_image(image, canny_lt=120):
     img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     img = cv2.GaussianBlur(img, (3, 3), 0)
-    img = cv2.Canny(img, canny_lower_threshold, 255)
+    img = cv2.Canny(img, canny_lt, 255)
+
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3)), iterations=1)
 
     contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
     contours = eliminate_outlier_contours(contours)
     contours = stack_contours_vertically(contours)
-
-    img2 = image.copy()
-    for cnt in contours:
-        hull = cv2.convexHull(cnt)
-        cv2.drawContours(img2, [hull], -1, (0, 0, 255), 1)
-
-    cv2.imwrite("debug.png", img2)
 
     return contours
 
 
-def find_bounding_boxes(contours):
-    return [cv2.boundingRect(contour) for contour in contours if cv2.contourArea(contour) > 40]
-
-
 def resize_to_desired_width(image, desired_width=500):
     aspect_ratio = float(image.shape[1]) / image.shape[0]
-    desired_height = int(desired_width / aspect_ratio)
-    return cv2.resize(image, (desired_width, desired_height))
+    height = int(desired_width / aspect_ratio)
+    return cv2.resize(image, (desired_width, height))
 
 
-def identify_objects(bounding_boxes, image, label_decoder):
+def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt):
 
-    images = [center_and_make_square(image[y:y + height, x:x + width]) for x, y, width, height in bounding_boxes]
-    labels = predict_labels(images, label_decoder=label_decoder)
-
-    identified_objects = []
-    for idx, (x, y, width, height) in enumerate(bounding_boxes):
-        identified_objects.append(
-            {"y": y + height // 2,
-             "x": x + width // 2,
-             "label": labels[idx]}
-        )
-
-    return sorted(identified_objects, key=lambda elem: elem["x"])
-
-
-def identify_objects_in_image(image, label_decoder, canny_lower_threshold):
-
-    image_resized = resize_to_desired_width(image)
-    contours = find_contours(image_resized, canny_lower_threshold)
-    bounding_boxes = find_bounding_boxes(contours)
+    image_ = resize_to_desired_width(image)
+    contours = detect_contours_in_image(image_, canny_lt)
+    bounding_boxes = [cv2.boundingRect(contour) for contour in contours if cv2.contourArea(contour) > 20]
 
     if len(bounding_boxes) == 0:
         return []
 
-    identified_objects = identify_objects(bounding_boxes, image_resized, label_decoder)
-    return identified_objects
+    preprocessed_images = [
+        prepare_image_for_recognition(image_[y:y + height, x:x + width], bin_lt=bin_lt)
+        for x, y, width, height in bounding_boxes
+    ]
+
+    predictions = fetch_tfserving(preprocessed_images, label_decoder=label_decoder)
+    predicted_labels = [np.argmax(p) for p in predictions]
+    labels = [label_decoder[predicted_label] for predicted_label in predicted_labels]
+
+    identified_objects = []
+    for idx, (x, y, width, height) in enumerate(bounding_boxes):
+        identified_objects.append({"y": y + height // 2, "x": x + width // 2, "label": labels[idx]})
+
+    return sorted(identified_objects, key=lambda elem: elem["x"])
 
 
-def convert_image_to_equation(image, label_decoder):
+def recognize_equation_in_image(image, label_decoder):
 
     for canny_lt in [120, 85, 50, 100, 130, 150, 200]:
+        for bin_lt in [130, 150, 180, 100, 90]:
 
-        identified_objects = identify_objects_in_image(image, label_decoder, canny_lt)
-        equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")
+            identified_objects = identify_objects_in_image(image, label_decoder, canny_lt, bin_lt)
+            equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")
+            parsing_status, parsing_result = str_to_sympy(equation)
 
-        parsing_status, parsing_result = str_to_sympy(equation)
+            if parsing_status is True:
+                return True, {"str_eq": equation, "sympy_eq": parsing_result}
 
-        if parsing_status is True:
-            return True, {"str_eq": equation, "sympy_eq": parsing_result}
-
-    return False, "Couldn't recoginze this equation"
+    return False, "Couldn't recognize this image"
 

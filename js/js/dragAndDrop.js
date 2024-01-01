@@ -72,7 +72,7 @@ function readAndResizeFile(file) {
                 imageElement.style.display = "block";
 
                 cropper = new Cropper(imageElement, {
-                    background: false,
+                    //TODO remove transparent background
                     data:{
                         width: 450
                     },

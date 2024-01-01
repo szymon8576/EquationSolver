@@ -1,7 +1,6 @@
 from sympy import *
 from base64 import b64encode
 import matplotlib
-import sympy
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -55,14 +54,13 @@ def solve_eq(eq):
 
     if not eq.lhs.as_poly():
         eq = Eq(eq.rhs, eq.lhs)
-        instructions.append(("Firstly, swap equation sides so that all expressions containing x are on left-hand side.",
-                             [sympy.latex(eq)]))
+        instructions.append(("Firstly, swap equation sides so that all expressions containing x are on left-hand side.", [latex(eq)]))
 
     # STEP 1: simplify lhs and rhs
     curr_eq, prev_eq = Eq(simplify(eq.lhs), simplify(eq.rhs)), eq
-    latex_eqs = [sympy.latex(prev_eq), sympy.latex(curr_eq)]
+    latex_eqs = [latex(prev_eq), latex(curr_eq)]
 
-    if sympy.latex(curr_eq) != sympy.latex(prev_eq):
+    if latex(curr_eq) != latex(prev_eq):
         print(curr_eq, prev_eq)
         instructions.append(("Simplify both sides of the equations by combining like terms.", latex_eqs))
 
@@ -70,10 +68,10 @@ def solve_eq(eq):
     if curr_eq.lhs.as_poly():
         num = curr_eq.lhs.as_poly().all_coeffs()[-1]
         curr_eq, prev_eq = apply_to_eq(curr_eq, num, "subtract"), curr_eq
-        latex_eqs = [sympy.latex(prev_eq) + r"\quad \mathbf{" + (f" /-{num}" if num >= 0 else f" /-({num})") + "}",
-                     sympy.latex(curr_eq)]
+        latex_eqs = [latex(prev_eq) + r"\quad \mathbf{" + (f" /-{num}" if num >= 0 else f" /-({num})") + "}",
+                     latex(curr_eq)]
 
-        if sympy.latex(curr_eq) != sympy.latex(prev_eq):
+        if latex(curr_eq) != latex(prev_eq):
             instructions.append((f"Subtract {num} from both sides of the equation.", latex_eqs))
 
     # STEP 3: subtract {x, RHS} from both sides
@@ -81,22 +79,22 @@ def solve_eq(eq):
         x_coeff = convert_to_int_or_float(curr_eq.rhs.as_poly().all_coeffs()[0])
         curr_eq, prev_eq = apply_to_eq(curr_eq, x_coeff * x, "subtract"), curr_eq
         latex_eqs = [
-            sympy.latex(prev_eq) + r"\quad \mathbf{" + (f" /-{x_coeff}x" if x_coeff >= 0 else f" /-({x_coeff}x)") + "}",
-            sympy.latex(curr_eq)]
+            latex(prev_eq) + r"\quad \mathbf{" + (f" /-{x_coeff}x" if x_coeff >= 0 else f" /-({x_coeff}x)") + "}",
+            latex(curr_eq)]
 
-        if sympy.latex(curr_eq) != sympy.latex(prev_eq):
+        if latex(curr_eq) != latex(prev_eq):
             instructions.append((f"Subtract {x_coeff}x from both sides of the equation.", latex_eqs))
 
     # STEP 4: divide by x coeff
     if curr_eq.lhs.as_poly():
         x_coeff = convert_to_int_or_float(curr_eq.lhs.as_poly().all_coeffs()[0])
         curr_eq, prev_eq = apply_to_eq(curr_eq, x_coeff, "divide"), curr_eq
-        latex_eqs = [sympy.latex(prev_eq) + r"\quad \mathbf{/:" + str(x_coeff) + r"}", sympy.latex(curr_eq)]
+        latex_eqs = [latex(prev_eq) + r"\quad \mathbf{/:" + str(x_coeff) + r"}", latex(curr_eq)]
 
-        if sympy.latex(curr_eq) != sympy.latex(prev_eq):
+        if latex(curr_eq) != latex(prev_eq):
             instructions.append((f"Divide both sides of the equation by {x_coeff}.", latex_eqs))
 
-    instructions.append((f"This is the final result.", [sympy.latex(curr_eq)]))
+    instructions.append((f"This is the final result.", [latex(curr_eq)]))
 
     # convert latex equations to byte64 format
     instructions = [(instr, latex_to_byte64(tex)) for instr, tex in instructions]
