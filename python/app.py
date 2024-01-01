@@ -12,6 +12,7 @@ from arithmeticOCR import recognize_equation_in_image
 from solver import solve_eq
 
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
 CORS(app)
 
 label_encoder = load('label_encoder.pkl') # TODO

@@ -42,8 +42,8 @@ def str_to_sympy(eq):
 
 def fetch_tfserving(images, label_decoder):
 
-    tf_serving_url = 'http://localhost:8501/v1/models/ArithmeticOCR:predict'
     try:
+        tf_serving_url = app.config['TFSERVING_URL'] + '/v1/models/ArithmeticOCR:predict'
         instances = [np.array(np.expand_dims(image, 2)).tolist() for image in images]
         response = requests.post(tf_serving_url, json={"instances": instances})
 
