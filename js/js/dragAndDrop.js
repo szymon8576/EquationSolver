@@ -18,7 +18,7 @@ dropZone.addEventListener("dragleave", () => {
 dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
 
-    if(fileInput.files.length == 1 && fileInput.files[0].type == "image/png")
+    if(e.dataTransfer.files.length > 0 && e.dataTransfer.files[0].type == "image/png")
     {
         dropZone.style.border = "2px dashed #ccc";
         readAndResizeFile(e.dataTransfer.files[0]);
@@ -31,7 +31,7 @@ dropZone.addEventListener("click", () => {
 });
 
 fileInput.addEventListener("change", () => {
-    if(fileInput.files.length == 1 && fileInput.files[0].type == "image/png") 
+    if(fileInput.files.length > 0 && fileInput.files[0].type == "image/png") 
     {
         readAndResizeFile(fileInput.files[0]);
     }
