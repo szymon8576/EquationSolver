@@ -188,8 +188,8 @@ def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt):
 
 def recognize_equation_in_image(image, label_decoder):
 
-    for canny_lt in [120, 85, 50, 100, 130, 150, 200]:
-        for bin_lt in [130, 150, 180, 100, 90]:
+    for canny_lt in [120, 85, 50, 150]:
+        for bin_lt in [130, 150, 180, 100]:
 
             identified_objects = identify_objects_in_image(image, label_decoder, canny_lt, bin_lt)
             equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")

@@ -5,6 +5,8 @@ from joblib import load
 from flask import Flask, request
 from flask_cors import CORS
 from imageio import imread
+from cv2 import boundingRect
+
 # import psycopg2
 # import os
 
@@ -30,7 +32,10 @@ def solve():
 
     image_base64 = request.json["image"].split(",")[-1]
     image_cv2 = imread(BytesIO(b64decode(image_base64)))
-    image_cv2 = image_cv2[:, :, :3]  # skip alpha channel
+
+    # Crop image to the region containing non-transparent pixels
+    x, y, w, h = boundingRect(image_cv2[..., 3])
+    image_cv2 = image_cv2[y:y + h, x:x + w, :]
 
     parsing_status, parsing_result = recognize_equation_in_image(image_cv2, label_decoder)
 
