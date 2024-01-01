@@ -3,6 +3,10 @@ const images = [
     'examples/1.jpg',
     'examples/2.png',
     'examples/3.png',
+    'examples/4.png',
+    'examples/5.png',
+    'examples/6.png',
+    'examples/7.png'
 ];
 
 
@@ -37,7 +41,7 @@ images.forEach((imageUrl, index) => {
 updateCarousel();
 
 function updateCarousel() {
-    carousel.style.transform = `translateX(${(images.length - currentSlide-2) * (500)}px)`;
+    carousel.style.transform = `translateX(${(images.length - currentSlide-4) * (500)}px)`;
 
     if (currentSlide === 0) {
         prevButton.disabled = true;
