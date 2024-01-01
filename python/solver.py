@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 from io import BytesIO
 
-#test
 def round_expr(expr, num_digits=3):
     return expr.xreplace({n.evalf(): round(n, num_digits) for n in expr.atoms(Number)})
 
