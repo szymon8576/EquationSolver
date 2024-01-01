@@ -18,13 +18,11 @@ dropZone.addEventListener("dragleave", () => {
 dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
 
-    if(e.dataTransfer.files.length > 0 && e.dataTransfer.files[0].type == "image/png")
-    {
+    if(e.dataTransfer.files.length == 0) return
+    else if (e.dataTransfer.files[0].type != "image/png") document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
+    else {
         dropZone.style.border = "2px dashed #ccc";
         readAndResizeFile(e.dataTransfer.files[0]);
-    }
-    else{
-        document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
     }
 });
 
@@ -34,12 +32,10 @@ dropZone.addEventListener("click", () => {
 });
 
 fileInput.addEventListener("change", () => {
-    if(fileInput.files.length > 0 && fileInput.files[0].type == "image/png") 
-    {
+    if(fileInput.files.length == 0) return
+    else if (fileInput.files[0].type != "image/png") document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
+    else {
         readAndResizeFile(fileInput.files[0]);
-    }
-    else{
-        document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
     }
 });
 
