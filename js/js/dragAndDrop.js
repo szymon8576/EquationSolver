@@ -89,5 +89,5 @@ function readAndResizeFile(file) {
 function resetDropZone() {
     imageElement.src = "";
     dropZone.style.display = "block";
-    cropper.destroy();
+    if(cropper) cropper.destroy();
 }

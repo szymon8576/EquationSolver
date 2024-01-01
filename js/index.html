@@ -9,66 +9,69 @@
     <link rel="stylesheet" href="./css/carousel.css">
     <link rel="stylesheet" href="./css/faq.css">
     <link rel="stylesheet" href="./css/explanation.css">
+    <link rel="stylesheet" href="./css/spinner.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.css">
 
 </head>
 <body>
 
-
+    
+    
     <div id="topDivWrapper">
      <div id="topDiv">
         <div class="topDivElementLeft"><img id="logoImage" src="./images/logo.png" alt="Logo image"></div>
         <div class="topDivElementRight">
                    <p>This tool solves single variable equations. Recognized symbols are all digits, subtraction, addition, equality signs and symbol of the variable, <i>x</i>. For more information visit <a href="javascript:go_to_faq_section()">FAQ</a> section.</p>
-            </div>
-        </div> 
-    </div>
-    
-
-    
-    <div id="inputDivWrapper" class="rounded-div animation-ease">
-
-        <div id="topButtonsWrapper" class="centered-div">
-            <button class="left-button button blue pressed" id="canvasButton">Write on board</button>
-            <button class="middle-button button blue" id="imageButton">Upload image</button>
-            <button class="right-button button blue" id="examplesButton">See examples</button>
-        </div>
-
-        <div id="canvasDiv" class="inputDiv active">
-            <h2>Draw an equation below:</p>
-            <canvas id="canvas" width="800" height="300"></canvas>
-            <br>
+                </div>
+            </div> 
         </div>
         
-        <div id="imageDiv" class="inputDiv ">
-            <div id="dropZone">
-                <p>Drag and drop a PNG image here, or click to select one.</p>
-            </div>
-            <input id="fileInput" type="file" style="display: none;" accept="image/png;capture=camera" onchange="loadLocalImage(event)">
-            <img  id="imagePlaceholder" src="">
-        </div>
-
-        <div id="examplesDiv" class="inputDiv centered-div carousel-container">
-            <div id="carouselWrapper">
-                <div class="carousel"></div>    
-                <!--  -->
-                <!-- <button class="carousel-button next-button">&#9654;</button> -->
+        
+        
+        <div id="inputDivWrapper" class="rounded-div animation-ease">
+            
+            <div id="topButtonsWrapper" class="centered-div">
+                <button class="left-button button blue pressed" id="canvasButton">Write on board</button>
+                <button class="middle-button button blue" id="imageButton">Upload image</button>
+                <button class="right-button button blue" id="examplesButton">See examples</button>
             </div>
             
-        </div>
-
-        <div id="clearSolveButtonsDiv" class="centered-div">
-            <button class="button green prev-button">&#9664;</button>
-            <button id="clearButton" class="button whole-button red">Clear</button>
-            <button class="button whole-button green" id="solveButton">Solve</button>
+            <div id="canvasDiv" class="inputDiv active">
+                <h2>Draw an equation below:</p>
+                    <canvas id="canvas" width="800" height="300"></canvas>
+                <br>
+            </div>
+        
+            <div id="imageDiv" class="inputDiv ">
+                <div id="dropZone">
+                    <p>Drag and drop a PNG image here, or click to select one.</p>
+                </div>
+                <input id="fileInput" type="file" style="display: none;" accept="image/png;capture=camera" onchange="loadLocalImage(event)">
+                <img  id="imagePlaceholder" src="">
+            </div>
+            
+            <div id="examplesDiv" class="inputDiv centered-div carousel-container">
+                <div id="carouselWrapper">
+                    <div class="carousel"></div>    
+                    <!--  -->
+                    <!-- <button class="carousel-button next-button">&#9654;</button> -->
+                </div>
+                
+            </div>
+            
+            <div id="clearSolveButtonsDiv" class="centered-div">
+                <div class="lds-spinner" id="spinning-wheel"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <button class="button green prev-button">&#9664;</button>
+                <button id="clearButton" class="button whole-button red">Clear</button>
+                <button class="button whole-button green" id="solveButton">Solve</button>
             <button class="button green next-button">&#9654;</button>
-        </div>
+            </div>
 
     </div>
-
+    
     <div id="solutionLoader" class="loader"></div>
-
+    
     <div id="solutionDiv" class="centered-div solutionDiv">
         <div id="errorDiv" class="centered-div rounded-div equalWidthDiv errorDivClass">
             <div><h3 id="errorDivText"></h3></div>
@@ -86,8 +89,8 @@
     </div>
 
     
-
-
+    
+    
     <div id="faqContainer" class="faq-container rounded-div equalWidthDiv">
         <div class="faq-item">
             <div class="question"><i class="fas fa-question-circle fa-lg"></i> How does this app work?</div>

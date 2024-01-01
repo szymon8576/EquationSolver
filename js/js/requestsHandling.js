@@ -67,9 +67,20 @@ function clear_result(){
 }
 
 
+document.getElementById("spinning-wheel").style.display = 'none';
+
+function showWheel(){
+    document.getElementById("spinning-wheel").style.display = 'block';
+}
+
+function hideWheel(which="upper"){
+    document.getElementById("spinning-wheel").style.display =  'none';
+}
+
 // Function used to minimize backend response time by spinning it up from inactivity on frontend load.
 // Render.com instance type used in this project spins down with inactivity)
 function backendSpinUp(backendURL){
+    
 
     fetch(`${backendURL}/health-check`, {
         method: "GET",
@@ -112,6 +123,7 @@ loadConfig();
 
 
  async function send_image(imageData){
+    showWheel();
     try {
 
         const response = await fetch(`${backendURL}/solve`, {
@@ -190,6 +202,8 @@ loadConfig();
         
         console.error("Error:", error);
     }
+
+    hideWheel();
 
     
 

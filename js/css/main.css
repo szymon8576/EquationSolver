@@ -166,6 +166,7 @@ h2 {
 #clearSolveButtonsDiv{
     align-items: center;
     padding-bottom: 15px;
+    position:relative;
 }
 
 .solveButtonInExamples{
@@ -344,3 +345,5 @@ hr{
         opacity: 1;
     }
 }
+
+
