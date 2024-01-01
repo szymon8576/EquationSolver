@@ -84,4 +84,15 @@
       opacity: 0;
     }
   }
+
+
+  
+.countdown {
+    position: absolute;
+    right: 26px;
+    bottom: 22px;
+    font-size: 10px;
+    font-style: italic;
+    color: #001369;
+  }
   

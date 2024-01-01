@@ -63,4 +63,4 @@ imageButton.addEventListener("click", () => {
 
 examplesButton.addEventListener("click", () => {
     buttonClicked(examplesButton);
-}); 
+});

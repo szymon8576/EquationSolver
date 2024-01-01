@@ -68,13 +68,35 @@ function clear_result(){
 
 
 document.getElementById("spinning-wheel").style.display = 'none';
+document.querySelector('.countdown').style.display='none';
+let first_query = true;
 
 function showWheel(){
+    
     document.getElementById("spinning-wheel").style.display = 'block';
+
+    if(first_query){
+
+        const countdownElement = document.querySelector('.countdown');
+        countdownElement.style.display='block';
+        countdownElement.textContent = 30;
+
+        const countdownInterval = setInterval(() => {
+            countdownElement.textContent--;
+    
+            if (countdownElement.textContent <= 0) {
+                countdownElement.textContent = 0;
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+
+      first_query = false;
+    }
 }
 
-function hideWheel(which="upper"){
+function hideWheel(){
     document.getElementById("spinning-wheel").style.display =  'none';
+    document.querySelector('.countdown').style.display= "none";
 }
 
 // Function used to minimize backend response time by spinning it up from inactivity on frontend load.
