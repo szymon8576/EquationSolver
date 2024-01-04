@@ -59,33 +59,29 @@ h2 {
     font-family: inherit;
 }
 
-/* Left Button */
+
 .left-button {
     width: 33.3333%;
     border-top-left-radius: 20px;
     border-right: 1px solid black;
 }
 
-/* Right Button */
+
 .right-button {
     width: 33.3333%;
     border-top-right-radius: 20px;
-    /* border-bottom-right-radius: 20px; */
     border-left: 1px solid black; 
 }
 
 .blue {
-    /* background: linear-gradient(to bottom, #004fb0, #5E35B1); */
     background-color: #3353ac;
 }
 
 .green {
-    /* background: linear-gradient(to bottom, #2fa937, #005b0c); */
     background-color: #1b7500;
 }
 
 .gray {
-    /* background: linear-gradient(to bottom, #aaaaaa, #dcdcdc); */
     background-color: #c4c4c4;
 }
 
@@ -94,12 +90,10 @@ h2 {
 }
 
 .pressed {
-    /* background: linear-gradient(to bottom, #002c66, #001023); */
     background-color: #001369;
 }
 
 .red {
-    /* background: linear-gradient(to bottom, #a00000, #580000); */
     background-color: #ac0000;
 }
 
@@ -171,6 +165,11 @@ h2 {
 
 .solveButtonInExamples{
     width: 110px;
+}
+
+
+.solveButtonInExamples:hover {
+    transform: scale(1); 
 }
 
 .sticky-header {

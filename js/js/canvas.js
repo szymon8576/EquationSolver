@@ -1,7 +1,18 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
 ctx.fillStyle = "rgb(255,255,255)";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+let num_templates = 6;
+const templateFilenames = Array.from({ length: num_templates }, (_, i) => `template${i + 1}.png`);
+const chosenTemplate = templateFilenames[Math.floor(Math.random() * num_templates)];
+
+const img = new Image();
+        img.src = `./images/${chosenTemplate}`;
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+
 
 const clearButton = document.getElementById("clearButton");
 const solveButton = document.getElementById("solveButton");
