@@ -125,9 +125,12 @@ def stack_contours_vertically(contours, threshold=20):
     return [np.vstack([contour["coords"] for contour in group]) for group in grouped_contours]
 
 
-def detect_contours_in_image(image, canny_lt=120):
+def detect_contours_in_image(image, canny_lt=120, gaussian_blur=True):
     img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    img = cv2.GaussianBlur(img, (3, 3), 0)
+
+    if gaussian_blur:
+        img = cv2.GaussianBlur(img, (3, 3), 0)
+
     img = cv2.Canny(img, canny_lt, 255)
 
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3)), iterations=1)
@@ -161,10 +164,10 @@ def fetch_tfserving(data):
         print(str(e))
         
         
-def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt):
+def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt, gaussian_blur):
 
     image_ = resize_to_desired_width(image)
-    contours = detect_contours_in_image(image_, canny_lt)
+    contours = detect_contours_in_image(image_, canny_lt, gaussian_blur)
     bounding_boxes = [cv2.boundingRect(contour) for contour in contours if cv2.contourArea(contour) > 20]
 
     if len(bounding_boxes) == 0:
@@ -190,13 +193,14 @@ def recognize_equation_in_image(image, label_decoder):
 
     for canny_lt in [120, 85, 50, 150]:
         for bin_lt in [130, 150, 180, 100]:
+            for gaussian_blur in [True, False]:
 
-            identified_objects = identify_objects_in_image(image, label_decoder, canny_lt, bin_lt)
-            equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")
-            parsing_status, parsing_result = str_to_sympy(equation)
+                identified_objects = identify_objects_in_image(image, label_decoder, canny_lt, bin_lt, gaussian_blur)
+                equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")
+                parsing_status, parsing_result = str_to_sympy(equation)
 
-            if parsing_status is True:
-                return True, {"str_eq": equation, "sympy_eq": parsing_result}
+                if parsing_status is True:
+                    return True, {"str_eq": equation, "sympy_eq": parsing_result}
 
     return False, "Couldn't recognize this image"
 
