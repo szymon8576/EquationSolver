@@ -1,1 +1,1 @@
-TFSERVING_URL = "https://tfserving-app.yellowsea-fa8c6318.westus2.azurecontainerapps.io"
+TFSERVING_URL = "https://tfserving-app.gentlerock-142a28f4.westus2.azurecontainerapps.io"

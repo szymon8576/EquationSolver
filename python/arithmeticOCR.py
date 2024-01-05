@@ -125,16 +125,26 @@ def stack_contours_vertically(contours, threshold=20):
     return [np.vstack([contour["coords"] for contour in group]) for group in grouped_contours]
 
 
-def detect_contours_in_image(image, canny_lt=120, gaussian_blur=True):
+# source: pyimagesearch.com
+def auto_canny(image, sigma=0.33):
+    # compute the median of the single channel pixel intensities
+    v = np.median(image)
+    # apply automatic Canny edge detection using the computed median
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image, lower, upper)
+    return edged
+
+
+def detect_contours_in_image(image, canny_sigma=120, gaussian_blur=True):
     img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     if gaussian_blur:
         img = cv2.GaussianBlur(img, (3, 3), 0)
-
-    img = cv2.Canny(img, canny_lt, 255)
-
+    
+    img = auto_canny(img, sigma=canny_sigma) 
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3)), iterations=1)
-
+        
     contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     contours = eliminate_outlier_contours(contours)
     contours = stack_contours_vertically(contours)
@@ -164,10 +174,10 @@ def fetch_tfserving(data):
         print(str(e))
         
         
-def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt, gaussian_blur):
+def identify_objects_in_image(image, label_decoder, canny_sigma, bin_lt, gaussian_blur):
 
     image_ = resize_to_desired_width(image)
-    contours = detect_contours_in_image(image_, canny_lt, gaussian_blur)
+    contours = detect_contours_in_image(image_, canny_sigma, gaussian_blur)
     bounding_boxes = [cv2.boundingRect(contour) for contour in contours if cv2.contourArea(contour) > 20]
 
     if len(bounding_boxes) == 0:
@@ -191,11 +201,11 @@ def identify_objects_in_image(image, label_decoder, canny_lt, bin_lt, gaussian_b
 
 def recognize_equation_in_image(image, label_decoder):
 
-    for canny_lt in [120, 85, 50, 150]:
+    for canny_sigma in [0.33, 0.1, 0.2, 0.4]:
         for bin_lt in [130, 150, 180, 100]:
             for gaussian_blur in [True, False]:
 
-                identified_objects = identify_objects_in_image(image, label_decoder, canny_lt, bin_lt, gaussian_blur)
+                identified_objects = identify_objects_in_image(image, label_decoder, canny_sigma, bin_lt, gaussian_blur)
                 equation = "".join([elem["label"] for elem in identified_objects]).replace("X", "x")
                 parsing_status, parsing_result = str_to_sympy(equation)
 
