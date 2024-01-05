@@ -136,7 +136,7 @@ def auto_canny(image, sigma=0.33):
     return edged
 
 
-def detect_contours_in_image(image, canny_sigma=120, gaussian_blur=True):
+def detect_contours_in_image(image, canny_sigma=0.33, gaussian_blur=True):
     img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     if gaussian_blur:
