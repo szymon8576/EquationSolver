@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 CORS(app)
 
-label_encoder = load('label_encoder.pkl') # TODO
+label_encoder = load('label_encoder.pkl')
 label_decoder = {i: label for i, label in enumerate(label_encoder.classes_)}
 
 # conn = psycopg2.connect(
