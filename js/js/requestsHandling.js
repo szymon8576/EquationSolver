@@ -153,7 +153,7 @@ loadConfig();
                 else if (equation_status === "INDETERMINATE"){
 
                     solutionSteps.classList.add("hidden");
-                    numOfSolutions.innerText = "This is indeterminate equation. It has infinite number of solutions.";
+                    numOfSolutions.innerText = "This is an indeterminate equation. It has infinite number of solutions.";
                 }
                 else{
  
