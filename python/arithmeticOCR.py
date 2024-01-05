@@ -53,7 +53,7 @@ def prepare_image_for_recognition(image, bin_lt=130):
 
     # pad image to obtain ~ 1:1 ratio
     height, width = img.shape[0], img.shape[1]
-    desired_size = max(height, width) * 1.1
+    desired_size = max(height, width) * 1.3
     delta_y, delta_x = int((desired_size - height) // 2), int((desired_size - width) // 2)
     img = cv2.copyMakeBorder(img, delta_y, delta_y, delta_x, delta_x, cv2.BORDER_CONSTANT, value=0)
 
