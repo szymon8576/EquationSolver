@@ -19,7 +19,7 @@ dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
 
     if(e.dataTransfer.files.length == 0) return
-    else if (e.dataTransfer.files[0].type != "image/png") document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
+    else if (!["image/png","image/jpeg"].includes(e.dataTransfer.files[0].type)) document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG/JPG files are accepted! 🚩"
     else {
         dropZone.style.border = "2px dashed #ccc";
         readAndResizeFile(e.dataTransfer.files[0]);
@@ -33,7 +33,7 @@ dropZone.addEventListener("click", () => {
 
 fileInput.addEventListener("change", () => {
     if(fileInput.files.length == 0) return
-    else if (fileInput.files[0].type != "image/png") document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG files are accepted! 🚩"
+    else if (!["image/png","image/jpeg"].includes(fileInput.files[0].type)) document.getElementById("dragAndDropZoneText").innerText="Please remember that only PNG/JPG files are accepted! 🚩"
     else {
         readAndResizeFile(fileInput.files[0]);
     }
@@ -92,6 +92,6 @@ function readAndResizeFile(file) {
 function resetDropZone() {
     imageElement.src = "";
     dropZone.style.display = "block";
-    document.getElementById("dragAndDropZoneText").innerText="Drag and drop a PNG image here, or click to select one 📸"
+    document.getElementById("dragAndDropZoneText").innerText="Drag and drop a PNG/JPG image here, or click to select one 📸"
     if(cropper) cropper.destroy();
 }
