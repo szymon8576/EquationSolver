@@ -1,12 +1,7 @@
 body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
     font-family: 'Jost';
     font-size: 18px;
     line-height: 1.5;
-
-    background-color: rgb(52, 70, 93);
 } 
 
 
@@ -45,7 +40,7 @@ h2 {
 }
 
 #spacer{
-   padding: 1px;
+   padding: 5px;
 }
 
 .button {
@@ -116,10 +111,13 @@ h2 {
     width: 100%;
 }
 
+
+
 #topDivWrapper{
     display: flex;
     justify-content: center;
     align-items: center; 
+    
 }
 
 #topDiv{
