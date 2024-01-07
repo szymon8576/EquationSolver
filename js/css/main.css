@@ -7,6 +7,7 @@ body, html {
 
 #canvas {
     border: 1px solid black;
+    margin-top: 15px;
 }
 
 .centered-div{
@@ -156,6 +157,10 @@ h2 {
 }
 
 #imageContainer{
+    font-size: 16px;
+}
+
+#numOfSolutions{
     font-size: 16px;
 }
 

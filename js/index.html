@@ -40,9 +40,10 @@
             </div>
             
             <div id="canvasDiv" class="inputDiv active">
-                <h2>Draw an equation below:</p>
+                <h2>Draw an equation below:
                     <canvas id="canvas" width="800" height="300"></canvas>
                 <br>
+            </h2>
             </div>
         
             <div id="imageDiv" class="inputDiv ">
@@ -126,8 +127,7 @@
                                     <li>By calculating the distance of each contour's centroid to the median Y value of all centroids. Contours with centroids significantly far from the median are considered outliers and are removed.</li>
                                     <li>By measuring the distance to the nearest object. Contours with distances above a certain threshold are considered outliers and are removed.</li>
                                 </ul>
-                                
-                                </p>
+
                         </div>
                         <div class="explanationStepImageDiv"><img src="./images/contour-without-outliers.png" class="explanationStepImage"></div>
                     </div>
@@ -152,7 +152,6 @@
                                     <li>Each bounding box's content is processed and prepared for recognition.</li>
                                     <li>A Convolutional Neural Network (CNN) model is utilized to predict the label for each bounding box's content. The model uses the prepared content as input and provides a label as output.</li>
                                 </ul>
-                            </p>
                         </div>
                         <div class="explanationStepImageDiv"><img src="./images/predictions.png" class="explanationStepImage"></div>
                     </div>
@@ -184,15 +183,14 @@
                     <li>three mathematical operators: equality (<b>=</b>), addition (➕) and subtraction (➖)</li>
                     <li>the sign of the variable, <i>x</i>.</li>
                 </ul>
-            </p>
-            <p>Please note that fractions or parentheses are not supported (yet 😉). If you want to see examples showing abilities of this tool, see <a href="javascript:go_to_examples_section()">examples</a> section.</p> </div>
+                <p>Please note that fractions or parentheses are not supported (yet 😉). If you want to see examples showing abilities of this tool, see <a href="javascript:go_to_examples_section()">examples</a> section.</p> </div>
             
         </div>
         <div class="faq-item">
             <div class="question"><i class="fas fa-question-circle fa-lg"></i> My input has not been recognized. What can I do?</div>
             <div class="answer">
                 <ul>
-                    <li> Make sure that your equation does not contain unsupported symbols. Recognized symbols are all digits, -, +, = and symbol of the variable, x. </a>
+                    <li> Make sure that your equation does not contain unsupported symbols. Recognized symbols are all digits, -, +, = and symbol of the variable, x. </li>
                     <li> If you uploaded a photo, make sure that the background is plain.</li>
                     <li> Try adding some space between symbols; if they are too close, algorithm may have a problem with proper object separation.</li>
                     <li> <a href="javascript:go_to_examples_section()">See examples</a> to get to know more about valid requests.</li>
@@ -214,9 +212,7 @@
     <div id="spacer">
     </div>
 
-            </div>
 
-    
     <script src="./js/toggleInput.js"></script>
     <script src="./js/requestsHandling.js"></script>
     <script src="./js/canvas.js"></script>
