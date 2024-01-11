@@ -2,10 +2,8 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
 ctx.fillStyle = "rgb(255,255,255)";
 
-
-let num_templates = 6;
-const templateFilenames = Array.from({ length: num_templates }, (_, i) => `template${i + 1}.png`);
-const chosenTemplate = templateFilenames[Math.floor(Math.random() * num_templates)];
+const templateFilenames = ["template1.png", "template2.png", "template5.png", "template6.png"]
+const chosenTemplate = templateFilenames[Math.floor(Math.random() * templateFilenames.length)];
 
 const img = new Image();
         img.src = `./images/${chosenTemplate}`;
